@@ -44,11 +44,16 @@ class Sequence
      */
     public function __invoke()
     {
+        static $iteration = 1;
+
         if ($this->index > ($this->count - 1)) {
             $this->index = 0;
         }
 
-        return tap(value($this->sequence[$this->index]), function () {
+        $currentSequence = $this->sequence[$this->index];
+        $sequenceValue = is_callable($currentSequence) ? $currentSequence($iteration++) : $currentSequence;
+
+        return tap($sequenceValue, function () {
             $this->index = $this->index + 1;
         });
     }
